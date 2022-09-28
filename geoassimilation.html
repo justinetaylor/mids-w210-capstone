@@ -1,0 +1,85 @@
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+  
+  <head>
+    
+      <meta charset="utf-8">
+      <title>UCB W210 Geo Assimilation Project</title>
+      
+      
+        
+          
+        
+        
+          
+        <script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-2.4.2.min.js"></script>
+        <script type="text/javascript">
+            Bokeh.set_log_level("info");
+        </script>
+        
+      
+      
+    
+  </head>
+  
+  
+  <body>
+    
+      
+        
+          
+          
+            
+              <div class="bk-root" id="9eee97fb-aa07-443e-90f1-2bf60d576af3" data-root-id="23257"></div>
+            
+          
+        
+      
+      
+        <script type="application/json" id="23954">
+          {"6aea3fd4-34b8-4290-b26a-681d0c8aceff":{"defs":[],"roots":{"references":[{"attributes":{"api_key":"AIzaSyB_fzF2bKyUySSWRTMFCJP-VE1Gm_wmvaM","below":[{"id":"23266"}],"height":400,"left":[{"id":"23271"}],"map_options":{"id":"23256"},"renderers":[{"id":"23287"},{"id":"23294"}],"title":{"id":"23262"},"toolbar":{"id":"23278"},"width":500,"x_range":{"id":"23258"},"x_scale":{"id":"23767"},"y_range":{"id":"23259"},"y_scale":{"id":"23768"}},"id":"23257","subtype":"GMap","type":"GMapPlot"},{"attributes":{"coordinates":null,"data_source":{"id":"23255"},"glyph":{"id":"23284"},"group":null,"hover_glyph":null,"muted_glyph":{"id":"23286"},"nonselection_glyph":{"id":"23285"},"selection_glyph":{"id":"23289"},"view":{"id":"23288"}},"id":"23287","type":"GlyphRenderer"},{"attributes":{"fill_alpha":{"value":0.1},"fill_color":{"value":"#1f77b4"},"hatch_alpha":{"value":0.1},"line_alpha":{"value":0.1},"line_width":{"value":0.05},"xs":{"field":"xs"},"ys":{"field":"ys"}},"id":"23285","type":"Patches"},{"attributes":{"data":{"x":[],"y":[]},"selected":{"id":"23775"},"selection_policy":{"id":"23774"}},"id":"23290","type":"ColumnDataSource"},{"attributes":{},"id":"23767","type":"LinearScale"},{"attributes":{"source":{"id":"23255"}},"id":"23288","type":"CDSView"},{"attributes":{},"id":"23774","type":"UnionRenderers"},{"attributes":{},"id":"23768","type":"LinearScale"},{"attributes":{"fill_alpha":{"value":0.2},"fill_color":{"value":"#1f77b4"},"hatch_alpha":{"value":0.2},"line_alpha":{"value":0.2},"line_width":{"value":0.05},"xs":{"field":"xs"},"ys":{"field":"ys"}},"id":"23286","type":"Patches"},{"attributes":{"axis_label":"","coordinates":null,"formatter":{"id":"23269"},"group":null,"major_label_policy":{"id":"23770"},"ticker":{"id":"23270"}},"id":"23271","type":"LinearAxis"},{"attributes":{"dimension":"lat"},"id":"23270","type":"MercatorTicker"},{"attributes":{"callback":null},"id":"23274","type":"HoverTool"},{"attributes":{},"id":"23770","type":"AllLabels"},{"attributes":{"coordinates":null,"group":null,"text":"Land Selection"},"id":"23262","type":"Title"},{"attributes":{"fill_alpha":{"value":0.1},"fill_color":{"value":"red"},"hatch_alpha":{"value":0.1},"hatch_color":{"value":"red"},"line_alpha":{"value":0.1},"line_color":{"value":"red"},"size":{"value":10},"x":{"field":"x"},"y":{"field":"y"}},"id":"23292","type":"Circle"},{"attributes":{"lat":37.871666,"lng":-122.272781,"map_type":"satellite","zoom":14},"id":"23256","type":"GMapOptions"},{"attributes":{},"id":"23275","type":"ResetTool"},{"attributes":{"dimension":"lat"},"id":"23269","type":"MercatorTickFormatter"},{"attributes":{"geojson":"{\"type\": \"FeatureCollection\", \"features\": [{\"type\": \"Feature\", \"geometry\": {\"type\": \"Polygon\", \"coordinates\": [[[-122.267, 37.875], [-122.266, 37.87], [-122.257, 37.87], [-122.259, 37.873]]]}}]}","selected":{"id":"23773"},"selection_policy":{"id":"23772"}},"id":"23255","type":"GeoJSONDataSource"},{"attributes":{"fill_alpha":{"value":0.2},"fill_color":{"value":"red"},"hatch_alpha":{"value":0.2},"hatch_color":{"value":"red"},"line_alpha":{"value":0.2},"line_color":{"value":"red"},"size":{"value":10},"x":{"field":"x"},"y":{"field":"y"}},"id":"23293","type":"Circle"},{"attributes":{},"id":"23276","type":"WheelZoomTool"},{"attributes":{"source":{"id":"23290"}},"id":"23295","type":"CDSView"},{"attributes":{},"id":"23277","type":"PanTool"},{"attributes":{},"id":"23258","type":"Range1d"},{"attributes":{},"id":"23775","type":"Selection"},{"attributes":{"fill_alpha":{"value":0.5},"fill_color":{"value":"#1f77b4"},"line_width":{"value":0.05},"xs":{"field":"xs"},"ys":{"field":"ys"}},"id":"23284","type":"Patches"},{"attributes":{"line_alpha":{"value":0.8},"line_color":{"field":"color"},"line_width":{"value":5}},"id":"23289","type":"MultiLine"},{"attributes":{"coordinates":null,"data_source":{"id":"23290"},"glyph":{"id":"23291"},"group":null,"hover_glyph":null,"muted_glyph":{"id":"23293"},"nonselection_glyph":{"id":"23292"},"view":{"id":"23295"}},"id":"23294","type":"GlyphRenderer"},{"attributes":{"dimension":"lon"},"id":"23265","type":"MercatorTicker"},{"attributes":{"dimension":"lon"},"id":"23264","type":"MercatorTickFormatter"},{"attributes":{},"id":"23772","type":"UnionRenderers"},{"attributes":{},"id":"23259","type":"Range1d"},{"attributes":{"renderers":[{"id":"23287"}],"vertex_renderer":{"id":"23294"}},"id":"23296","type":"PolyDrawTool"},{"attributes":{},"id":"23771","type":"AllLabels"},{"attributes":{"tools":[{"id":"23274"},{"id":"23275"},{"id":"23276"},{"id":"23277"},{"id":"23296"}]},"id":"23278","type":"Toolbar"},{"attributes":{"fill_color":{"value":"red"},"hatch_color":{"value":"red"},"line_color":{"value":"red"},"size":{"value":10},"x":{"field":"x"},"y":{"field":"y"}},"id":"23291","type":"Circle"},{"attributes":{"axis_label":"","coordinates":null,"formatter":{"id":"23264"},"group":null,"major_label_policy":{"id":"23771"},"ticker":{"id":"23265"}},"id":"23266","type":"LinearAxis"},{"attributes":{},"id":"23773","type":"Selection"}],"root_ids":["23257"]},"title":"Bokeh Application","version":"2.4.2"}}
+        </script>
+        <script type="text/javascript">
+          (function() {
+            const fn = function() {
+              Bokeh.safely(function() {
+                (function(root) {
+                  function embed_document(root) {
+                    
+                  const docs_json = document.getElementById('23954').textContent;
+                  const render_items = [{"docid":"6aea3fd4-34b8-4290-b26a-681d0c8aceff","root_ids":["23257"],"roots":{"23257":"9eee97fb-aa07-443e-90f1-2bf60d576af3"}}];
+                  root.Bokeh.embed.embed_items(docs_json, render_items);
+                
+                  }
+                  if (root.Bokeh !== undefined) {
+                    embed_document(root);
+                  } else {
+                    let attempts = 0;
+                    const timer = setInterval(function(root) {
+                      if (root.Bokeh !== undefined) {
+                        clearInterval(timer);
+                        embed_document(root);
+                      } else {
+                        attempts++;
+                        if (attempts > 100) {
+                          clearInterval(timer);
+                          console.log("Bokeh: ERROR: Unable to run BokehJS code because BokehJS library is missing");
+                        }
+                      }
+                    }, 10, root)
+                  }
+                })(window);
+              });
+            };
+            if (document.readyState != "loading") fn();
+            else document.addEventListener("DOMContentLoaded", fn);
+          })();
+        </script>
+    
+  </body>
+  
+</html>
