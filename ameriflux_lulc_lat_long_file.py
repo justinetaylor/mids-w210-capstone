@@ -16,15 +16,17 @@ class lulc_lat_long_file():
         all_stations = pd.read_excel(self.filepath)
         sites =[ file[-24:-18] for file in self.all_files]
         locations = all_stations[all_stations['SITE_ID'].isin(sites)]
-        options = ['LOCATION_LAT','LOCATION_LONG',]
+        options = ['LOCATION_LAT','LOCATION_LONG','LOCATION_ELEV']
         lat_long_df = all_stations[all_stations['VARIABLE'].isin(options)]
 
         self.df =lat_long_df.pivot(index = ["SITE_ID",'GROUP_ID'], columns = 'VARIABLE', values = ['DATAVALUE']).reset_index().drop(columns = ['GROUP_ID'])
         self.df = self.df.T.reset_index(drop = True).T
-        self.df.rename(columns = {0:"SITE_ID", 1:"LATITUDE", 2:"LONGITUDE"}, inplace = True)
+       
+        self.df.rename(columns = {0:"SITE_ID",1:"ELEVATION", 2:"LATITUDE", 3:"LONGITUDE"}, inplace = True)
         self.lat_longfloat('LATITUDE')
         self.lat_longfloat('LONGITUDE')
-        self.df = self.df.groupby('SITE_ID')[["LATITUDE","LONGITUDE"]].agg("mean").reset_index()
+        self.lat_longfloat('ELEVATION')
+        self.df = self.df.groupby('SITE_ID')[["LATITUDE","LONGITUDE","ELEVATION"]].agg("mean").reset_index()
 
         lulc_options = ['IGBP']
         lulc_df = all_stations[all_stations['VARIABLE'].isin(lulc_options)]
@@ -34,6 +36,7 @@ class lulc_lat_long_file():
 
         lulc_lat_long_df = pd.merge(lulc_df,self.df,on = ["SITE_ID"] )
         
-        return lulc_lat_long_df
+        
+        lulc_lat_long_df.to_csv(self.save_path)
     def lat_longfloat(self,col):
         self.df[col] = self.df[col].astype(float)  
