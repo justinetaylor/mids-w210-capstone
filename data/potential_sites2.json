@@ -1027,18 +1027,7 @@
         ],
         "TIMESTAMP_START": "TIMESTAMP_START"
     },
-    "US-SCf": {
-        "GPP": [],
-        "TS": [
-            "TS"
-        ],
-        "TA": [
-            "TA"
-        ],
-        "NEE": [],
-        "RECO": [],
-        "TIMESTAMP_START": "TIMESTAMP_START"
-    },
+    
     "US-SRG": {
         "GPP": [
             "GPP_PI"
