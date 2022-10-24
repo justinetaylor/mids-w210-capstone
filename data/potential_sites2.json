@@ -1027,10 +1027,6 @@
         ],
         "TIMESTAMP_START": "TIMESTAMP_START"
     },
-<<<<<<< HEAD
-    
-=======
->>>>>>> 064fea25fe7c1216787e3dbe66c8166091cdb016
     "US-SRG": {
         "GPP": [
             "GPP_PI"
