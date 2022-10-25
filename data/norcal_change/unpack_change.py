@@ -31,8 +31,19 @@ for df in [change17, change18, change19, change20, change21]:
 
 
 # Join all years
-all_change = pd.concat([change17,change18,change19,change20,change21], ignore_index=True).reset_index()
+all_change = pd.concat([change17,change18,change19,change20,change21], ignore_index=True).reset_index().drop(columns=["result"], axis=1)
 
+all_change=all_change.rename(columns={  0: 'other',
+										1: 'trees_gained',
+										2: 'grass_gained',
+										3: 'flooded_vegetation_gained',
+										4: 'crops_gained',
+										5: 'shrub_and_scrub_gained',
+										6: 'trees_lost',
+										7: 'grass_lost',
+										8: 'flooded_veg_lost',
+										9: 'crops_lost',
+										10: 'shrub_and_scrub_lost'})
 # Write to CSV
 all_change.to_csv("all_change.csv")
 
@@ -41,5 +52,8 @@ all_change.to_csv("all_change.csv")
 all_change = pd.read_csv("all_change.csv")
 
 # Examine content
+print(all_change.columns)
 print(all_change.describe())
 print(all_change.head())
+
+
