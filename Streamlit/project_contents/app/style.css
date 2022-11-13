@@ -1,0 +1,192 @@
+/* All Streamlit Write Divs */
+div.css-1fv8s86.e16nr0p33 {
+    font-size: 30px;
+    font-weight: 400;
+    line-height: 1.6;
+    color: rgb(250, 250, 250);
+    box-sizing: border-box;
+    font-family: "Source Sans Pro", sans-serif;
+    margin-bottom: -1rem;
+}
+
+/* All Streamlit Labels */
+label.css-k3w14i.effi0qh3 {
+    font-family: "Source Sans Pro", sans-serif;
+    font-weight: 400;
+    line-height: 1.6;
+    text-size-adjust: 100%;
+    box-sizing: border-box;
+    font-size: 1rem;
+    color: rgb(250, 250, 250);
+    display: flex;
+    visibility: visible;
+    margin-bottom: 0.5rem;
+    height: auto;
+    min-height: 1.5rem;
+    vertical-align: middle;
+    flex-direction: row;
+    align-items: center;
+}
+
+/* All Streamlit Headers */
+/*
+div.css-zt5igj.e16nr0p32 {
+    text-size-adjust: 100%;
+    font-size: calc(1.4rem + 1.8vw);
+    font-family: "Source Sans Pro", sans-serif;
+    font-weight: 700;
+    text-align: center;
+    line-height: 1.2;
+    box-sizing: border-box;
+    position: relative;
+    left: calc(-3rem);
+    width: calc(100% + 2.5rem + 0.5rem);
+    display: flex;
+    align-items: center;
+    overflow: visible;
+}
+*/
+
+
+/* Streamlit Text Area Outer Div */
+div.stTextArea {
+    border-radius: 10px;
+    font-size: 1.25rem;
+    font-family: "Source Sans Pro", sans-serif;
+    font-weight: 400;
+    line-height: 1.6;
+    text-size-adjust: 100%;
+    color: rgb(0, 0, 0);
+    box-sizing: border-box;
+    width: 344px;
+}
+
+/* Streamlit Text Area Inner Outer Div */
+div.st-bb.st-b3.st-bc.st-b6.st-bd.st-be.st-bf.st-bg.st-bh.st-bi.st-bj.st-bk.st-bl.st-b1.st-bm.st-au.st-ax.st-av.st-aw.st-bn.st-bo.st-bp.st-bq.st-br.st-bs.st-bt {
+    border: 1px solid #DCDCDC;
+    border-radius: 10px;
+    font-size: 1.25rem;
+    font-family: "Source Sans Pro", sans-serif;
+    font-weight: 400;
+    line-height: 1.6;
+    text-size-adjust: 100%;
+    color: rgb(0, 0, 0);
+    box-sizing: border-box;
+}
+
+/* Streamlit Text Area Inner Inner Div */
+div.css-1om1ktf.e1y61itm0 {
+    border: 1px solid #DCDCDC;
+    border-radius: 10px;
+    font-size: 1.25rem;
+    font-family: "Source Sans Pro", sans-serif;
+    font-weight: 400;
+    line-height: 1.6;
+    text-size-adjust: 100%;
+    color: rgb(0, 0, 0);
+    box-sizing: border-box;
+}
+
+/* Streamlit Metric Div */
+/*
+div.css-keje6w.e1tzin5v2 {
+    border: 1px solid #DCDCDC;
+    background-color: #EEEEEE;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-family: "Source Sans Pro", sans-serif;
+    font-weight: 400;
+    line-height: 1.6;
+    text-size-adjust: 100%;
+    color: rgb(0, 0, 0);
+    box-sizing: border-box;
+    width: calc(50% - 1rem);
+    flex: 1 1 calc(50% - 1rem);
+    position: relative;
+}
+*/
+
+/* Streamlit Metric Label */
+div.css-50ug3q.e16fv1kl3 {
+    font-weight: 400;
+    text-size-adjust: 100%;
+    font-size: 1.25rem;
+    visibility: visible;
+    box-sizing: border-box;
+    overflow-wrap: normal;
+    text-overflow: ellipsis;
+    width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    font-family: "Source Sans Pro", sans-serif;
+    line-height: normal;
+    vertical-align: middle;
+    text-align: center;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+/* Streamlit Metric Value */
+div.css-50ug3q.e16fv1kl3 {
+    font-weight: 400;
+    text-size-adjust: 100%;
+    text-align: center;
+    font-size: 1.5rem;
+    box-sizing: border-box;
+    overflow-wrap: normal;
+    text-overflow: ellipsis;
+    width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    font-family: "Source Sans Pro", sans-serif;
+    line-height: normal;
+    vertical-align: middle;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+/* Streamlit Metric Delta */
+div.css-50ug3q.e16fv1kl3 {
+    text-size-adjust: 100%;
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 400;
+    box-sizing: border-box;
+    overflow-wrap: normal;
+    text-overflow: ellipsis;
+    width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    font-family: "Source Sans Pro", sans-serif;
+    line-height: normal;
+    vertical-align: middle;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+/* Streamlit Metric Delta Indicator */
+svg.e1fb0mya1css-jhkj9c.ex0cdmw0 {
+    font-family: "Source Sans Pro", sans-serif;
+    text-align: center;
+    line-height: 1.6;
+    text-size-adjust: 100%;
+    font-weight: 400;
+    box-sizing: border-box;
+    vertical-align: middle;
+    overflow: hidden;
+    color: inherit;
+    fill: currentcolor;
+    display: inline-flex;
+    align-items: center;
+    font-size: 1.5rem;
+    width: 1.5rem;
+    height: 1.5rem;
+    margin: 0px 0.125rem 0px 0px;
+}
+
+
+/* background: rgb(14, 17, 23); */
+
