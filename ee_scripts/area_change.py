@@ -56,10 +56,10 @@ print(change_list)
 df_for_inference = ac.get_climate_data_for_change(geometry, year)
 
 # examine results
-print(result.describe())
-print("Number of days", len(result['gridmet_date'].unique()))
-result['latlng_pair'] = result['latitude'].apply(str) +  result['longitude'].apply(str)
-print("Number of pixels that changed", len(pd.unique(result['latlng_pair'])))
+print(df_for_inference.describe())
+print("Number of days", len(df_for_inference['gridmet_date'].unique()))
+df_for_inference['latlng_pair'] = df_for_inference['latitude'].apply(str) +  df_for_inference['longitude'].apply(str)
+print("Number of pixels that changed", len(pd.unique(df_for_inference['latlng_pair'])))
 
 # export 
 df_for_inference.to_csv("sample_inference_export.csv", index=False)
@@ -298,7 +298,7 @@ class AreaChange:
 
     # clip/set values for each image
     def finalize_mod_img(mod_img):
-      return (mod_img
+      return (mod_img.unmask(0.01)
           .clip(change_img.geometry())
           .updateMask(change_img.mask())
           .addBands(change_img.select("change"))
@@ -507,10 +507,18 @@ class AreaChange:
       df = geemap.ee_to_pandas(subset)
       exports.append(df)
 
-    # concatenate the dataframes to be one 
-    result = pd.concat(exports, axis=0, ignore_index=True)
+    if len(exports) > 1:
+      # concatenate the dataframes to be one 
+      return pd.concat(exports, axis=0, ignore_index=True)
+    elif len(exports) == 1:
+      return exports[0]
+    else:
+      return pd.DataFrame(dict.fromkeys(['gridmet_date', 'bare_mean', 'elevation', 'grass_mean', 'label_mode',
+       'crops_mean', 'built_mean', 'change', 'latitude', 'water_mean', 'vpd',
+       'flooded_vegetation_mean', 'tmmn', 'Fpar_500m', 'shrub_and_scrub_mean',
+       'snow_and_ice_mean', 'tmmx', 'Lai_500m', 'srad', 'trees_mean',
+       'quarter', 'longitude']))
 
-    return result
 
 
   def get_area_of_change(self, geometry, year):   
@@ -540,7 +548,4 @@ class AreaChange:
     # extract the list of dictionaries 
     groups = ee.List(label_stats.get('groups'))
     return groups.getInfo()
-
-
-
 
