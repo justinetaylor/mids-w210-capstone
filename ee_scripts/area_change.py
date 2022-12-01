@@ -27,37 +27,11 @@ print('Changes in land class (m^2): ', area_change)
 
 
 # get inference data 
-ee_data_for_inference = ac.get_climate_data_for_change_and_join()
+df_for_inference = ac.get_climate_data_for_change_and_join()
 
 # count how many pixels changed / what percentage of the area that was 
 pixel_count = ac.get_pixel_count()
 
-# convert to a dataframe for inference
-df_for_inference = ac.convert_fc_to_dataframe(ee_data_for_inference, [ 'change', 
-                                    'elevation',
-                                    'gridmet_date', 
-                                    'tmmn', 
-                                    'tmmx', 
-                                    'vpd', 
-                                    'srad',
-                                    'mod_date', 
-                                    'Fpar_500m', 
-                                    'Lai_500m', 
-                                    'dw_start_date',
-                                    'bare_mean',
-                                    'grass_mean',
-                                    'label_mode',
-                                    'crops_mean',
-                                    'built_mean',
-                                    'change',
-                                    'latitude',
-                                    'water_mean',
-                                    'flooded_vegetation_mean',
-                                    'shrub_and_scrub_mean',
-                                    'snow_and_ice_mean',
-                                    'trees_mean',
-                                    'quarter',
-                                    'longitude'])
 print("Area Size OK: ", ac.is_area_within_limits())
 
 print("Annual GPP Estimate: ", ac.mod17_estimate())
@@ -237,7 +211,7 @@ class AreaChange:
         mod17 for comparison. 
 
         Returns:
-            ee.FeatureCollection with all inference data
+            pandas DataFrame
         """
         self.get_annual_change_image()
 
@@ -317,7 +291,31 @@ class AreaChange:
         print("DWJoined  size", DWJoined.size().getInfo())
 
         final_result = ee.FeatureCollection(DWJoined.map(self.convert_to_fc_10m).flatten())
-        return final_result
+        return self.convert_fc_to_dataframe(final_result, [ 'change', 
+                                    'elevation',
+                                    'gridmet_date', 
+                                    'tmmn', 
+                                    'tmmx', 
+                                    'vpd', 
+                                    'srad',
+                                    'mod_date', 
+                                    'Fpar_500m', 
+                                    'Lai_500m', 
+                                    'dw_start_date',
+                                    'bare_mean',
+                                    'grass_mean',
+                                    'label_mode',
+                                    'crops_mean',
+                                    'built_mean',
+                                    'change',
+                                    'latitude',
+                                    'water_mean',
+                                    'flooded_vegetation_mean',
+                                    'shrub_and_scrub_mean',
+                                    'snow_and_ice_mean',
+                                    'trees_mean',
+                                    'quarter',
+                                    'longitude'])
 
 
     def get_annual_change_image(self):
@@ -685,7 +683,3 @@ class AreaChange:
         reduced  = gpp_col.reduce(ee.Reducer.sum())
         reducedRegion = reduced.reduceRegion(geometry=self.geo, reducer=ee.Reducer.sum(), scale=30)
         return reducedRegion.getInfo()
-
-
-
-
