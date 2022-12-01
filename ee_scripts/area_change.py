@@ -100,35 +100,6 @@ credentials = ee.ServiceAccountCredentials(service_account, '../.private-key.jso
 ee.Initialize(credentials)
 
 
-# from pydrive.auth import GoogleAuth
-# from pydrive.drive import GoogleDrive
-# from oauth2client.service_account import ServiceAccountCredentials
-
-# with open('service_worker_mail.txt', 'r') as file:
-#    service_account_file = file.read().replace('\n', '')
-
-# credentials = ee.ServiceAccountCredentials(service_account_file, '../.private-key.json')
-
-# # authenticate and initialize Google Earth Engine
-# ee.Initialize(credentials)
-
-# gauth = GoogleAuth()
-# scopes = ['https://www.googleapis.com/auth/drive']
-# gauth.credentials = ServiceAccountCredentials.from_json_keyfile_name('../.private-key.json', scopes=scopes)
-
-# drive = GoogleDrive(gauth)
-
-# # get list of files
-# file_list = drive.ListFile({'q': "'root' in parents and trashed=false"}).GetList()
-# for file in file_list:
-
-#     filename = file['title']
-
-#     file.GetContentFile(filename, mimetype="image/tiff")
-
-#     file.Delete()
-# print(file_list)
-
 class AreaChange:
     #  an ee.Image with 1 band. That band has integer values
     #  between 0 and 10 representing the change in land class.
@@ -258,9 +229,6 @@ class AreaChange:
         return groups.getInfo()
 
     def get_climate_data_for_change_and_join(self):
-        '''
-        TODO
-        '''
         self.get_annual_change_image()
 
         start_date = str(self.year - 1) + '-12-01'
