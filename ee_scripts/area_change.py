@@ -166,6 +166,7 @@ class AreaChange:
         # the year to analyze.
         self.year = year
 
+
     def get_area_of_change(self):
         '''
         This method computes the area (meters^2) of change in
@@ -228,7 +229,16 @@ class AreaChange:
         groups = ee.List(label_stats.get('groups'))
         return groups.getInfo()
 
+
     def get_climate_data_for_change_and_join(self):
+        """
+        This method gets all data needed for inference including
+        gridmet, mod15, dynamic world, and elevation as well as 
+        mod17 for comparison. 
+
+        Returns:
+            ee.FeatureCollection with all inference data
+        """
         self.get_annual_change_image()
 
         start_date = str(self.year - 1) + '-12-01'
@@ -309,6 +319,7 @@ class AreaChange:
         final_result = ee.FeatureCollection(DWJoined.map(self.convert_to_fc_10m).flatten())
         return final_result
 
+
     def get_annual_change_image(self):
         '''
         This method detects the change in land area classification
@@ -358,6 +369,7 @@ class AreaChange:
         self.change_mask = change.neq(0)
         self.change = change.updateMask(self.change_mask)
 
+
     def get_daily_gridmet_for_change(self, start_date, end_date):
         '''
         This method gets daily minimum temperature, maximum temperature,
@@ -391,6 +403,7 @@ class AreaChange:
         gridmet_dataset = gridmet_dataset.map(finalize_annual_gridmet_img)
         return gridmet_dataset
 
+
     def get_eight_day_gridmet_for_change(self, start_date, end_date):
         '''
         This method gets 8 day average minimum temperature, maximum temperature,
@@ -418,6 +431,8 @@ class AreaChange:
 
         # for each week, get a gridmet image for each day
         # take the average and clean up the image
+
+
         def reduce_to_weekly(dateMillis):
             new_start = ee.Date(dateMillis)
 
@@ -445,6 +460,7 @@ class AreaChange:
 
         return gridmet_dataset
 
+
     def get_elevation_for_change(self, start_date, end_date):
         '''
         This method gets elevation data from earthengine.
@@ -460,6 +476,7 @@ class AreaChange:
         elevation_dataset = ee.Image('USGS/3DEP/10m').select('elevation')
         return (elevation_dataset
                 .updateMask(self.change_mask))
+
 
     def get_mod15_for_change(self, start_date, end_date):
         '''
@@ -481,6 +498,7 @@ class AreaChange:
                          .filter(ee.Filter.date(start_date, end_date))
                          .select(['Lai_500m', 'Fpar_500m']))
 
+
         def finalize_mod_img(mod_img):
             # notice that we have .unmask(0.01) here. MOD15 has low spatial resolution
             # and in areas that are very built up (cities) there could be null values
@@ -498,6 +516,7 @@ class AreaChange:
 
         mod15_dataset = mod15_dataset.map(finalize_mod_img)
         return mod15_dataset
+
 
     def get_dw_for_change(self):
         '''
@@ -555,6 +574,7 @@ class AreaChange:
 
         return ee.ImageCollection.fromImages(all_quarters)
 
+
     def convert_fc_to_dataframe(self, fc, columns):
         '''
         This method converts an ee.FeatureCollection into a
@@ -574,7 +594,6 @@ class AreaChange:
         # geemap limits this conversion to 5000 elements so
         # we need to do it in batches and then concatenate them.
 
-        # num_exports = math.ceil(fc.size().getInfo() / 5000)
         exports = []
         export_number = 0
         while(True):
@@ -619,7 +638,12 @@ class AreaChange:
 
         return feature_collection
 
+
     def get_pixel_count(self):
+        """
+        Gets pixel statistics about the change that occurred. 
+        Ex. What percentage of the area had vegetation change?
+        """
         pixel_count = (self.change.select('change').reduceRegion(
         reducer= ee.Reducer.count(),
         geometry= self.geo,
@@ -642,6 +666,9 @@ class AreaChange:
 
 
     def is_area_within_limits(self):
+        """
+        Checks if the input geometry is too big
+        """
         area = self.geo.area().getInfo()
         if  area > 1000000:
             return False
