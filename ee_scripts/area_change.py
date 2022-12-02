@@ -204,6 +204,30 @@ class AreaChange:
         return groups.getInfo()
 
 
+     def get_change_that_might_occur(self):
+        dwCol = (ee.ImageCollection('GOOGLE/DYNAMICWORLD/V1')
+                    .filterBounds(self.geo)
+                    .filter(ee.Filter.calendarRange(year, year, 'year')))
+
+        composite = (dwCol
+                 .select(self.DYNAMIC_WORLD_COLUMNS)
+                 .reduce(ee.Reducer.mean()).unmask(self.NODATA_VALUE)
+                 .toArray().arrayArgmax().arrayGet([0])
+                 .rename('label_argmax'))
+
+        all_labels = ee.List([0,1,2,3,4,5,6,7,8])
+        veg_labels = ee.List([0,1,2,3,4,5,0,0,0])
+
+        composite = composite.remap(all_labels, veg_labels)
+        mask = composite.neq(0)
+        self.change = composite.select('label_argmax').updateMask(mask)
+
+        return self.get_climate_data_for_change_and_join()
+
+    def get_change_that_occurred(self):
+        self.get_annual_change_image()
+        return self.get_climate_data_for_change_and_join()
+
     def get_climate_data_for_change_and_join(self):
         """
         This method gets all data needed for inference including
