@@ -325,7 +325,7 @@ class AreaChange:
         '''
 
         # first, we'll look at Oct-Dec of Year-1
-        time_a = (str(self.year - 1) + '-10-01', str(self.year - 1) + '-12-31')
+        time_a = (str(self.year - 1) + '-09-01', str(self.year - 1) + '-12-31')
         # get the land class images for this time
         imgCol_1 = (ee.ImageCollection('GOOGLE/DYNAMICWORLD/V1')
                     .filterBounds(self.geo)
