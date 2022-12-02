@@ -10,56 +10,47 @@ the pixels that indicated a vegetation change.
 
 -------------
 from area_change import AreaChange
+import time
 
-# define inputs 
 geometry = [[-124.14507547221648, 41.11806816998926],
             [-124.14507547221648, 41.11457637941072],
             [-124.1394964774655, 41.11457637941072],
             [-124.1394964774655, 41.11806816998926]]
-year = 2018
 
-# initialize AreaChange with the geometry and year
 ac = AreaChange(geometry, year)
 
-# get area of change for each class
-area_change = ac.get_area_of_change()
-print('Changes in land class (m^2): ', area_change)
+def get_data(geometry, year):
+    ac = AreaChange(geometry, year)
+    area_change = ac.get_area_of_change()
+    df_for_inference = ac.get_change_that_might_occur()
+    pixel_count = ac.get_pixel_count('label_argmax')
+
+    print('Changes in land class (m^2): ', area_change)
+    print("Area Size OK: ", ac.is_area_within_limits())
+    print("Annual GPP Estimate: ", ac.mod17_estimate())
+    print("Describe DataFrame ", df_for_inference.describe())
+    print("Size ", len(df_for_inference.index))
 
 
-# get inference data 
-df_for_inference = ac.get_climate_data_for_change_and_join()
+s = time.time()
+get_data(geometry, 2017)
+get_data(geometry, 2018)
+get_data(geometry, 2019)
+get_data(geometry, 2020)
+get_data(geometry, 2021)
+e = time.time()
+print("Elapsed Time: ",e-s)
 
-# count how many pixels changed / what percentage of the area that was 
-pixel_count = ac.get_pixel_count()
-
-print("Area Size OK: ", ac.is_area_within_limits())
-
-print("Annual GPP Estimate: ", ac.mod17_estimate())
-
-# examine results
-print(df_for_inference.describe())
-print(df_for_inference.head())
-print(df_for_inference.columns)
-print(len(df_for_inference.index))
-
-# export
-df_for_inference.to_csv('sample_inference_export.csv', index=False)
 
 --------------
 Sample Output:
-
-Changes in land class (m^2):  [ {'change': 1, 'sum': 800.4590225219727}, 
-                                {'change': 2, 'sum': 2201.262107849121}, 
-                                {'change': 5, 'sum': 400.22943115234375}, 
-                                {'change': 6, 'sum': 100.05741882324219}, 
-                                {'change': 7, 'sum': 400.2296447753906}, 
-                                {'change': 9, 'sum': 100.05741882324219}]
-Number of pixels with vegetation change:  53
-Total nuber of pixels in the area:  2418
-Percentage of change:  2.1918941273779984
+Changes in land class (m^2):  [{'change': 1, 'sum': 600.3442916870117}, {'change': 2, 'sum': 2401.376853942871}, {'change': 4, 'sum': 200.11469268798828}, {'change': 6, 'sum': 100.05741882324219}, {'change': 7, 'sum': 400.2296447753906}, {'change': 9, 'sum': 100.05741882324219}]
 Export Number:  0
 Export Number:  1
-Area Size:  True
+Number of unmasked pixels:  2164
+Total nuber of pixels in the area:  2418
+Percentage:  89.49545078577337
+Area Size OK:  True
 Annual GPP Estimate:  {'GPP_sum': 5702355.25882353}
 '''
 import math
@@ -72,7 +63,6 @@ from datetime import datetime
 service_account = "calucapstone@ee-calucapstone.iam.gserviceaccount.com"
 credentials = ee.ServiceAccountCredentials(service_account, '../.private-key.json')
 ee.Initialize(credentials)
-
 
 class AreaChange:
     #  an ee.Image with 1 band. That band has integer values
@@ -203,11 +193,10 @@ class AreaChange:
         groups = ee.List(label_stats.get('groups'))
         return groups.getInfo()
 
-
-     def get_change_that_might_occur(self):
+    def get_change_that_might_occur(self):
         dwCol = (ee.ImageCollection('GOOGLE/DYNAMICWORLD/V1')
                     .filterBounds(self.geo)
-                    .filter(ee.Filter.calendarRange(year, year, 'year')))
+                    .filter(ee.Filter.calendarRange(self.year, self.year, 'year')))
 
         composite = (dwCol
                  .select(self.DYNAMIC_WORLD_COLUMNS)
@@ -217,12 +206,11 @@ class AreaChange:
 
         all_labels = ee.List([0,1,2,3,4,5,6,7,8])
         veg_labels = ee.List([0,1,2,3,4,5,0,0,0])
-
-        composite = composite.remap(all_labels, veg_labels)
-        mask = composite.neq(0)
-        self.change = composite.select('label_argmax').updateMask(mask)
-
+        composite = composite.select('label_argmax').remap(all_labels, veg_labels).rename('label_argmax')
+        self.change_mask = composite.neq(0)
+        self.change = composite.select('label_argmax').updateMask(self.change_mask)
         return self.get_climate_data_for_change_and_join()
+
 
     def get_change_that_occurred(self):
         self.get_annual_change_image()
@@ -237,7 +225,6 @@ class AreaChange:
         Returns:
             pandas DataFrame
         """
-        self.get_annual_change_image()
 
         start_date = str(self.year - 1) + '-12-01'
         end_date = str(self.year) + '-11-30'
@@ -271,7 +258,6 @@ class AreaChange:
           outer= True
         );
         GridmetModJoined = saveAllJoinGridmetMod.apply(gridmet, mod15.select(["Lai_500m","Fpar_500m"]), timeFilterGridmetMod);
-        print("GridmetModJoined  size", GridmetModJoined.size().getInfo())
 
         def flatten_join_mod_gridmet(join_feature):
           img = ee.Image(join_feature)
@@ -280,7 +266,6 @@ class AreaChange:
           return result
 
         GridmetModJoined = GridmetModJoined.map(flatten_join_mod_gridmet)
-        print("GridmetModJoined  size", GridmetModJoined.size().getInfo())
 
 
         # Join GRIDMET/MOD with DW/ELEV
@@ -303,7 +288,6 @@ class AreaChange:
           outer= True
         );
         DWJoined = saveAllJoinDW.apply(GridmetModJoined, dw, timeFilterDW);
-        print("DWJoined  size", DWJoined.size().getInfo())
 
         def flatten_join_dw(join_feature):
           img = ee.Image(join_feature)
@@ -312,7 +296,6 @@ class AreaChange:
           return result
 
         DWJoined = DWJoined.map(flatten_join_dw)
-        print("DWJoined  size", DWJoined.size().getInfo())
 
         final_result = ee.FeatureCollection(DWJoined.map(self.convert_to_fc_10m).flatten())
         return self.convert_fc_to_dataframe(final_result, [ 'change', 
@@ -329,6 +312,7 @@ class AreaChange:
                                     'bare_mean',
                                     'grass_mean',
                                     'label_mode',
+                                    'label_argmax',
                                     'crops_mean',
                                     'built_mean',
                                     'change',
@@ -661,30 +645,30 @@ class AreaChange:
         return feature_collection
 
 
-    def get_pixel_count(self):
+    def get_pixel_count(self, band):
         """
         Gets pixel statistics about the change that occurred. 
         Ex. What percentage of the area had vegetation change?
         """
-        pixel_count = (self.change.select('change').reduceRegion(
+        pixel_count = (self.change.select(band).reduceRegion(
         reducer= ee.Reducer.count(),
         geometry= self.geo,
         scale= 10,
         tileScale=16,
-        maxPixels= 1e9, bestEffort=True).get('change'))
+        maxPixels= 1e9, bestEffort=True).get(band))
 
-        all_pixels = (self.change.select('change').unmask().reduceRegion(
+        all_pixels = (self.change.select(band).unmask().reduceRegion(
         reducer= ee.Reducer.count(),
         geometry= self.geo,
         scale= 10,
                 tileScale=16,
 
-        maxPixels= 1e9, bestEffort=True).get('change'))
+        maxPixels= 1e9, bestEffort=True).get(band))
 
         ratio = ee.Number(pixel_count).divide(all_pixels).multiply(100)
-        print("Number of pixels with vegetation change: ", pixel_count.getInfo())
+        print("Number of unmasked pixels: ", pixel_count.getInfo())
         print("Total nuber of pixels in the area: ", all_pixels.getInfo())
-        print("Percentage of change: ", ratio.getInfo())
+        print("Percentage: ", ratio.getInfo())
 
 
     def is_area_within_limits(self):
@@ -707,3 +691,6 @@ class AreaChange:
         reduced  = gpp_col.reduce(ee.Reducer.sum())
         reducedRegion = reduced.reduceRegion(geometry=self.geo, reducer=ee.Reducer.sum(), scale=30)
         return reducedRegion.getInfo()
+
+
+
