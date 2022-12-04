@@ -12,3 +12,11 @@ Photosynthesis is a natural process that takes carbon dioxide out of the atmosph
 
 ## Our Solution
 Our CALCUlator product uses Google Earth Engine (GEE) data and Random Forest regression techniques to help City Planners as well as Chief Sustainability Officers understand the amount of natural carbon absorption lost from developing over vegetated land, and the cost to replenish that natural carbon absorption to achieve Net Zero Carbon.
+
+## The Team from University of California Berkeley - MIDS Capstone Fall 2022
+- Justine Taylor, Product Manager
+- Jacob Wilson, Architect
+- Stephen Chen, Engineer
+- Clayton Summit, Data Scientist
+- Prathyusha Charagondla, Data Scientist
+
