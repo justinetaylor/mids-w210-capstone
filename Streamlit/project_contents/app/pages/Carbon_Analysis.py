@@ -30,7 +30,7 @@ with open('project_contents/app/style.css') as f:
        st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
 
 # Google api key
-api_key = 'AIzaSyB_fzF2bKyUySSWRTMFCJP-VE1Gm_wmvaM'
+api_key = '' # Add your own Google Maps api key in this field
 bokeh_width, bokeh_height = 700,600
 
 # Set Streamlit page details
