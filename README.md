@@ -27,5 +27,6 @@ Our CALCUlator product uses Google Earth Engine (GEE) data and Random Forest reg
 - Prathyusha Charagondla, Data Scientist
 
 ## The Code
-Our application was built using Streamlit, Bokeh, Azure App Services, Azure Container Registry Services, and obviously the host of Python libraries to enable our data and ML pipelines. 
+Our application was built using Streamlit (app foundation), Bokeh (visualizations), Azure App Services (container hosting), Azure Container Registry Services, Azure Data Lake Storage Gen2, and obviously a host of Python libraries to enable our data and ML pipelines. Listed below are the primary folders that represent our codebase. 
+- **Streamlit folder:** Contains all of the application code files to build a docker container image and deploy to Azure App Services via Azure Container Registry Service. However, the private json key for calls to GEE apis is not included in this folder. You would have to set up your own GEE subscription and then use your own private key which would need to be replaced in the area_change.py file and the Carbon_Analysis.py file. In the DOCKER file you will also notice a VOLUME mount path of /w210containermount. This is where the Streamlit application loads the GEE private key and model binary from Azure Data Lake Storage Gen2. 
 
