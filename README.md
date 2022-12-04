@@ -1,5 +1,5 @@
 # UC Berkeley - MIDS Capstone Fall 2022
-This GitHub repository includes our project code files for the Fall 2022 Masters of Information and Data Science (MIDS) Capstone. Details about the project, the team, and the code below. 
+This GitHub repository includes our project code files for the Fall 2022 Masters of Information and Data Science (MIDS) Capstone. Details about the project, the team, and the code below. A BIG thanks to Microsoft for our Azure grant and another BIG thanks to the Google Earth Engine team for the continued guidance and support throughout our project. 
 
 ## Our Mission
 To create a more sustainable future by helping City Planners and Chief Sustainability Officers understand the amount of natural carbon absorption lost from developing over vegetated land, and the cost to replenish that natural carbon absorption to achieve Net Zero Carbon.
@@ -19,4 +19,7 @@ Our CALCUlator product uses Google Earth Engine (GEE) data and Random Forest reg
 - Stephen Chen, Engineer
 - Clayton Summit, Data Scientist
 - Prathyusha Charagondla, Data Scientist
+
+## The Code
+Our application was built using Streamlit, Bokeh, Azure App Services, Azure Container Registry Services, and obviously the host of Python libraries to enable our data and ML pipelines. 
 
