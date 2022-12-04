@@ -1,5 +1,6 @@
 # UC Berkeley - MIDS Capstone Fall 2022 (CALCUlator)
 This GitHub repository includes our CALCUlator code files for the Fall 2022 Masters of Information and Data Science (MIDS) Capstone. Details about the project, the team, and the code below. A BIG thanks to Microsoft for our Azure grant, a BIG thanks to the Google Earth Engine team for the continued guidance and support throughout our project, and of course a BIG thanks to the prior research in this area from MOD17 and Robinson et al.
+- [UC Berkeley Capstone project site](https://www.ischool.berkeley.edu/projects/2022/calculator-carbon-absorption-loss-continued-urbanization)
 - [CALCUlator product website](https://codebeard.wixsite.com/ucb-calculator)
 - [CALCUlator Streamlit application in Azure](https://carbon-web-app-ucb.azurewebsites.net/)
 - [Related work with carbon absorption - GPP](https://zslpublications.onlinelibrary.wiley.com/doi/10.1002/rse2.74)
