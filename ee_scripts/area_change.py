@@ -17,6 +17,7 @@ geometry = [[-124.14507547221648, 41.11806816998926],
             [-124.1394964774655, 41.11457637941072],
             [-124.1394964774655, 41.11806816998926]]
 
+# [ONLY TO MODEL WITH GEE]
 gm = GeeModel()
 # adjust and write training data. only uncomment when altering training data.
 # gm.adjust_and_write_training_data()  
@@ -24,20 +25,31 @@ gm.train_model()
 
 def get_data(geometry, year):
     ac = AreaChange(geometry, year)
+
+    # check area size
+    print("Is Area Size OK: ", ac.is_area_within_limits())
+
+    # detect veg change and compute change amounts 
     area_change = ac.get_area_of_change()
+    print('Changes in land class (m^2): ', area_change)
+
+    # [not required] get number of pixels that changed 
+    pixel_count = ac.get_pixel_count('label_argmax')
+
+    # [not required] get annual gpp estimate accoring to MOD17
+    print("MOD17 Annual GPP Estimate: ", ac.mod17_estimate())
+
+    # [ONLY TO MODEL WITH GEE] get inference data AND run inference:
     ac.output_mode = 'fc'
     fc = ac.get_change_that_might_occur()
     gpp = gm.inference(fc)
-    pixel_count = ac.get_pixel_count('label_argmax')
+    print("CALCUlator Total Estimated GPP: ", gpp)
 
-    print('Changes in land class (m^2): ', area_change)
-    print("Area Size OK: ", ac.is_area_within_limits())
-    print("Annual GPP Estimate: ", ac.mod17_estimate())
+    
+    # [ONLY TO MODEL WITH SKLEARN] get inference data:
+    df_for_inference = ac.get_change_that_might_occur()
     print("Describe DataFrame ", df_for_inference.describe())
     print("Size ", len(df_for_inference.index))
-    print("Total Estimated GPP: ", gpp)
-
-
 
 get_data(geometry, 2017)
 get_data(geometry, 2018)
@@ -46,18 +58,6 @@ get_data(geometry, 2020)
 get_data(geometry, 2021)
 e = time.time()
 print("Elapsed Time: ",e-s)
-
-
---------------
-Sample Output:
-Changes in land class (m^2):  [{'change': 1, 'sum': 600.3442916870117}, {'change': 2, 'sum': 2401.376853942871}, {'change': 4, 'sum': 200.11469268798828}, {'change': 6, 'sum': 100.05741882324219}, {'change': 7, 'sum': 400.2296447753906}, {'change': 9, 'sum': 100.05741882324219}]
-Export Number:  0
-Export Number:  1
-Number of unmasked pixels:  2164
-Total nuber of pixels in the area:  2418
-Percentage:  89.49545078577337
-Area Size OK:  True
-Annual GPP Estimate:  {'GPP_sum': 5702355.25882353}
 '''
 import math
 import geemap
@@ -868,4 +868,3 @@ class GeeModel():
         predictions = resultNullsFiltered.classify(self.classifier, 'predicted_gpp')
         total = predictions.aggregate_sum('predicted_gpp')
         return total.getInfo()
-
