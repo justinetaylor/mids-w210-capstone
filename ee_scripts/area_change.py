@@ -9,20 +9,25 @@ the pixels that indicated a vegetation change.
 # Sample Usage
 
 -------------
-from area_change import AreaChange
 import time
+s = time.time()
 
 geometry = [[-124.14507547221648, 41.11806816998926],
             [-124.14507547221648, 41.11457637941072],
             [-124.1394964774655, 41.11457637941072],
             [-124.1394964774655, 41.11806816998926]]
 
-ac = AreaChange(geometry, year)
+gm = GeeModel()
+# adjust and write training data. only uncomment when altering training data.
+# gm.adjust_and_write_training_data()  
+gm.train_model()
 
 def get_data(geometry, year):
     ac = AreaChange(geometry, year)
     area_change = ac.get_area_of_change()
-    df_for_inference = ac.get_change_that_might_occur()
+    ac.output_mode = 'fc'
+    fc = ac.get_change_that_might_occur()
+    gpp = gm.inference(fc)
     pixel_count = ac.get_pixel_count('label_argmax')
 
     print('Changes in land class (m^2): ', area_change)
@@ -30,9 +35,10 @@ def get_data(geometry, year):
     print("Annual GPP Estimate: ", ac.mod17_estimate())
     print("Describe DataFrame ", df_for_inference.describe())
     print("Size ", len(df_for_inference.index))
+    print("Total Estimated GPP: ", gpp)
 
 
-s = time.time()
+
 get_data(geometry, 2017)
 get_data(geometry, 2018)
 get_data(geometry, 2019)
@@ -56,12 +62,16 @@ Annual GPP Estimate:  {'GPP_sum': 5702355.25882353}
 import math
 import geemap
 import pandas as pd
-
+# import threading
+# import apscheduler 
+import numpy as np
 import ee
 from datetime import datetime
-
+import time 
+# from sklearn import ensemble
+# from geemap import ml
 service_account = "calucapstone@ee-calucapstone.iam.gserviceaccount.com"
-credentials = ee.ServiceAccountCredentials(service_account, '../.private-key.json')
+credentials = ee.ServiceAccountCredentials(service_account, '.private-key.json')
 ee.Initialize(credentials)
 
 class AreaChange:
@@ -72,6 +82,7 @@ class AreaChange:
     # where to ignore pixels
     change_mask = None
 
+    output_mode = 'df'
     # constants
     MIN_PIXEL_SCALE_METERS = 10
     NODATA_VALUE = -1
@@ -298,7 +309,8 @@ class AreaChange:
         DWJoined = DWJoined.map(flatten_join_dw)
 
         final_result = ee.FeatureCollection(DWJoined.map(self.convert_to_fc_10m).flatten())
-        return self.convert_fc_to_dataframe(final_result, [ 'change', 
+        if self.output_mode == 'df':
+            return self.convert_fc_to_dataframe(final_result, [ 'change', 
                                     'elevation',
                                     'gridmet_date', 
                                     'tmmn', 
@@ -324,6 +336,8 @@ class AreaChange:
                                     'trees_mean',
                                     'quarter',
                                     'longitude'])
+        else:
+            return final_result
 
 
     def get_annual_change_image(self):
@@ -693,4 +707,165 @@ class AreaChange:
         return reducedRegion.getInfo()
 
 
+class GeeModel():
+    classifier = None
+    classifier_export_task = None 
+    training_features = ['LATITUDE_x',
+                          'LONGITUDE_x' ,
+                          'srad_mean'  , 
+                          'tmmn_mean',
+                           'tmmx_mean',
+                           'vpd_mean'  ,  
+                           'Fpar_500m_mean'  ,
+                           'Lai_500m_mean'      , 
+                           'water_mean_mean' ,
+                           'trees_mean_mean' ,
+                           'grass_mean_mean' ,
+                           'flooded_vegetation_mean_mean' ,   
+                           'crops_mean_mean' ,
+                           'shrub_and_scrub_mean_mean'   ,
+                           'built_mean_mean',
+                            'bare_mean_mean',  
+                           'snow_and_ice_mean_mean'  ,
+                          ]
+    label = 'GPP_mean'
+
+    def adjust_and_write_training_data(self):
+        grouped_mean_gpp= pd.read_csv('../data/8_day_grouped_data.csv', sep = '\t')
+        grouped_mean_gpp =  grouped_mean_gpp.drop(['Unnamed: 0'], axis=1)
+
+        good_sites= [site for site in grouped_mean_gpp['SITE_ID'].unique() if site not in  ['US-Ne1','US-Ne2','US-Ne3'] ]
+        grouped_mean_gpp = grouped_mean_gpp[grouped_mean_gpp['SITE_ID'].isin(good_sites)]
+
+        X = grouped_mean_gpp[self.training_features]
+        X['label_argmax_numeric_mean']= X['label_argmax_numeric_mean'].astype("int64")
+        X['label_argmax_numeric_mean']= X['label_argmax_numeric_mean'].astype("category")
+
+        y = grouped_mean_gpp["GPP_mean"]
+
+        #random chose site for train without replacement with equal probability for 80/20 split
+        train_sites = np.random.choice(good_sites, (27), replace = False)
+        test_sites = [site for site in good_sites if site not in train_sites ]
+            
+        print("Train:",train_sites, "\nTest", test_sites)
+        train = grouped_mean_gpp[grouped_mean_gpp['SITE_ID'].isin(train_sites)]
+        test = grouped_mean_gpp[grouped_mean_gpp['SITE_ID'].isin(test_sites)]
+
+        train.to_csv('training_data.csv', index=False)
+        test.to_csv('testing_data.csv', index=False)
+
+    # showcase work: currently not used / working. please ignore.
+    # def check_export_status(self):
+    #     # showcase work: currently not used / working. please ignore.
+    #     scheduler = apscheduler.scheduler.Scheduler()
+    #     scheduler.start()
+    #     def check_status():
+    #         print("Classifier Export Status", self.classifier_export_task.status()['status'])
+
+    #     scheduler.add_interval_job(check_status, seconds = 30)
+    #     if self.classifier_export_task.status()['status'] == 'COMPLETED':
+    #         scheduler.shutdown()
+    #         return
+         
+    #     # return asset_name
+
+
+    # def save_model(self):
+    #     trees = ee.List(ee.Dictionary(self.classifier.explain()).get('trees'))
+        
+    #     def create_tree_feature(tree):
+    #         return ee.Feature(None, {'tree':tree})
+
+    #     col = ee.FeatureCollection(trees.map(create_tree_feature))
+
+    #     self.classifier_export_task = ee.batch.Export.table.toAsset(collection=col, assetId='projects/ee-calucapstone/assets/trainedModeltest')
+    #     self.classifier_export_task.start()
+    #     print(self.classifier_export_task.status())
+    #     while(self.classifier_export_task.status()['state'] not in ('COMPLETED', 'FAILED') ):
+    #         print(self.classifier_export_task.status()['state'])
+    #         time.sleep(15)
+
+    #     print(self.classifier_export_task.status())
+    #     # self.classifier_export_task.cancelOperation()
+    #     folder = ee.data.getAssetRoots()# [0]['id']
+    #     # assets = ee.data.listAssets({'parent': folder})
+    #     print(folder)
+    #     # Load classifier
+    #     # var trees = ee.FeatureCollection(AssetName).aggregate_array('tree').aside(print)
+    #     # var classifier = ee.Classifier.decisionTreeEnsemble(trees)
+
+
+    def train_model(self):
+        train = pd.read_csv('training_data.csv')
+
+        features = []
+        for index, row in train.iterrows():
+            f = ee.Feature(ee.Geometry.Point([row['LONGITUDE_x'],row['LATITUDE_x']]) ,row.to_dict())
+            features.append(f)
+
+        ee_training_features = ee.FeatureCollection(features)
+
+        # Filter nulls 
+        # TODO: Need to validate the effect of this on training
+        ee_training_features = ee_training_features.filter(ee.Filter.notNull(self.training_features))
+
+        # Random Forest Regression Classifier 
+        self.classifier = (ee.Classifier.smileRandomForest(**{
+            'numberOfTrees':750, 
+            'variablesPerSplit': 6, 
+            'minLeafPopulation': 295, 
+            'bagFraction': 0.9, 
+            'maxNodes': 266, 
+            'seed': 0})
+          .setOutputMode('REGRESSION')
+          .train(**{
+            'features': ee_training_features,
+            'classProperty': self.label,
+            'inputProperties': self.training_features
+            }))
+                
+        print("Classifier: ", self.classifier.explain().getInfo())  
+
+    def inference(self, fc):
+
+        def rename_feature_properties(feature):
+            return ee.Feature(feature.geometry(), { 
+              'LATITUDE_x': feature.get('latitude'),
+              'LONGITUDE_x': feature.get('latitude'),
+              'srad_mean'   : feature.get('srad_mean'),
+              'tmmn_mean'   : feature.get('tmmn_mean'),
+              'tmmx_mean'   : feature.get('tmmx_mean'),
+              'vpd_mean': feature.get('vpd_mean'),
+              'Fpar_500m_mean': feature.get('Fpar_500m')    ,
+              'Lai_500m_mean'   : feature.get('Lai_500m'),
+              'ee_elevation_mean': feature.get('elevation') ,
+              'water_mean_mean' : feature.get('water_mean'),
+              'trees_mean_mean' : feature.get('trees_mean'),
+              'grass_mean_mean' : feature.get('grass_mean'),
+              'flooded_vegetation_mean_mean'    : feature.get('flooded_vegetation_mean'),
+              'crops_mean_mean' : feature.get('crops_mean'),
+              'shrub_and_scrub_mean_mean'   : feature.get('shrub_and_scrub_mean'),
+              'built_mean_mean': feature.get('built_mean'), 
+              'bare_mean_mean'  : feature.get('bare_mean'),
+              'snow_and_ice_mean_mean': feature.get('snow_and_ice_mean')    
+            })
+
+        # Map the column names to match the training data
+        resultRenamed = fc.map(rename_feature_properties)
+
+        # Filter out any data points with null values for dynamic world
+        # This can happen if one quarter is super cloudy. It's usually ok.
+        # TODO: Need to validate the effect of this on training and inference
+        resultNullsFiltered = resultRenamed.filter(ee.Filter.notNull(['water_mean_mean' ,
+                                'trees_mean_mean'   ,
+                                'grass_mean_mean'   ,
+                                'flooded_vegetation_mean_mean'  ,
+                                'crops_mean_mean'   ,
+                                'shrub_and_scrub_mean_mean' ,
+                                'built_mean_mean',
+                                'bare_mean_mean'    ,
+                                'snow_and_ice_mean_mean']))
+        predictions = resultNullsFiltered.classify(self.classifier, 'predicted_gpp')
+        total = predictions.aggregate_sum('predicted_gpp')
+        return total.getInfo()
 
